@@ -1,5 +1,8 @@
 package org.vendingmachine.controller;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +28,34 @@ public class VendingMachineController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(@RequestParam(required = false) String error, Model model) {
+        model.addAttribute("error", error != null);
         return "login";
+    }
+
+    @GetMapping("/adminpanel")
+    public String adminPanel() {
+        return "adminpanel";
+    }
+
+
+    @PostMapping("/admin")
+    public String submitLogin(@RequestParam String password) {
+        if ("passadmin".equals(password)) {
+            return "redirect:/adminpanel";
+        }
+        return "redirect:/login?error=true";
+    }
+
+    @PostMapping("/logout")
+    public String submitLogout() {
+        return "redirect:/";
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public String handleException(Exception ex, Model model) {
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 }

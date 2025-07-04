@@ -19,6 +19,9 @@
             <td th:text="${product.quantity}"></td>
         </tr>
     </table>
+    <textarea th:if="${#lists.isEmpty(products)}" th:text="'No products available.'"></textarea>
+
+    <p><a href="/payment">Buy product</a></p>
     <p><a href="/">Back to Home</a></p>
 </body>
 </html>
