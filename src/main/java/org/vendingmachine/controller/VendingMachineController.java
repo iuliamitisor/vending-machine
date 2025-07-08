@@ -73,6 +73,18 @@ public class VendingMachineController {
         return "redirect:/products?success=true";
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public String handleRuntimeException(RuntimeException ex, Model model) {
+        if (ex.getMessage().equals("Invalid column number.")) {
+            model.addAttribute("iderror", true);
+            return "redirect:/products?iderror=true";
+        } else if (ex.getMessage().equals("Insufficient stock.")) {
+            model.addAttribute("stockerror", true);
+            return "redirect:/products?stockerror=true";
+        }
+        return "error";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {
         model.addAttribute("message", ex.getMessage());
