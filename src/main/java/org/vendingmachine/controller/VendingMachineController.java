@@ -60,6 +60,11 @@ public class VendingMachineController {
         return "redirect:/";
     }
 
+    @PostMapping("/buy")
+    public String buyProduct(@RequestParam int columnId) {
+        return "redirect:/products";
+    }
+
 
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {
