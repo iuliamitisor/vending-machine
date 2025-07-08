@@ -24,6 +24,7 @@ public class VendingMachineController {
     @GetMapping("/products")
     public String products(Model model) {
         model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("adminflag", false);
         return "products";
     }
 
@@ -36,6 +37,13 @@ public class VendingMachineController {
     @GetMapping("/adminpanel")
     public String adminPanel() {
         return "adminpanel";
+    }
+
+    @GetMapping("/adminpanel/products")
+    public String adminProducts(Model model) {
+        model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("adminflag", true);
+        return "products";
     }
 
 

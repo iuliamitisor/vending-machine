@@ -21,7 +21,9 @@
     </table>
     <textarea th:if="${#lists.isEmpty(products)}" th:text="'No products available.'"></textarea>
 
-    <p><a href="/payment">Buy product</a></p>
-    <p><a href="/">Back to Home</a></p>
+    <!--only shown to unauthenticated users-->
+    <p th:if="${!adminflag}"><a href="/payment">Buy product</a></p>
+    <p th:if="${!adminflag}"><a href="/">Back to Home</a></p>
+    <p th:if="${adminflag}"><a href="/adminpanel">Back to admin panel</a></p>
 </body>
 </html>
