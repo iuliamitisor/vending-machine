@@ -30,4 +30,15 @@ public class ProductService {
         }
         return null;
     }
+
+    public void buyProduct(int columnId) throws RuntimeException {
+        Product requestedProduct = findByColumn(columnId);
+        if (requestedProduct == null) {
+            throw new RuntimeException("Invalid column number.");
+        }
+        if (requestedProduct.getQuantity() <= 0) {
+            throw new RuntimeException("Insufficient stock.");
+        }
+        requestedProduct.decrementQuantity(1);
+    }
 }

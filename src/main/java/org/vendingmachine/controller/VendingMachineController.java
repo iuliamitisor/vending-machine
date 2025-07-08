@@ -69,14 +69,7 @@ public class VendingMachineController {
 
     @PostMapping("/buy")
     public String buyProduct(@RequestParam int columnId) {
-        Product requestedProduct = productService.findByColumn(columnId);
-        if (requestedProduct == null) {
-            return "redirect:/products?iderror=true";
-        }
-        if (requestedProduct.getQuantity() <= 0) {
-            return "redirect:/products?stockerror=true";
-        }
-        requestedProduct.decrementQuantity(1);
+        productService.buyProduct(columnId);
         return "redirect:/products?success=true";
     }
 
