@@ -22,12 +22,24 @@
     <textarea th:if="${#lists.isEmpty(products)}" th:text="'No products available.'"></textarea>
 
     <!--only shown to unauthenticated users-->
-    <form th:action="@{/buy}" method="post">
+    <form th:if="${!adminflag}" th:action="@{/buy}" method="post">
         <label for="columnId">Enter Product Column:</label>
         <input type="text" id="columnId" name="columnId" />
         <button type="submit">Buy product</button>
     </form>
     <p th:if="${!adminflag}"><a href="/">Back to Home</a></p>
+
+    <script th:if="${iderror}" th:inline="javascript">
+        alert("Invalid column number.");
+    </script>
+
+    <script th:if="${stockerror}" th:inline="javascript">
+        alert("Insufficient stock.");
+    </script>
+
+    <script th:if="${success}" th:inline="javascript">
+        alert("Product dispensed for free haha");
+    </script>
 
     <!--only shown to authenticated admin-->
     <p th:if="${adminflag}"><a href="/adminpanel">Back to admin panel</a></p>

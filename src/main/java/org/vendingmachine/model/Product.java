@@ -24,4 +24,8 @@ public class Product {
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public void decrementQuantity(int amount) {
+        this.quantity -= amount;
+    }
 }

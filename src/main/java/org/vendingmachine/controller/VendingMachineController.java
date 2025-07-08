@@ -3,6 +3,7 @@ package org.vendingmachine.controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.vendingmachine.model.Product;
 import org.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +23,15 @@ public class VendingMachineController {
     }
 
     @GetMapping("/products")
-    public String products(Model model) {
+    public String products(@RequestParam(required = false) String iderror,
+                           @RequestParam(required = false) String stockerror,
+                           @RequestParam(required = false) String success,
+                           Model model) {
         model.addAttribute("products", productService.getAllProducts());
         model.addAttribute("adminflag", false);
+        model.addAttribute("iderror", iderror != null);
+        model.addAttribute("stockerror", stockerror != null);
+        model.addAttribute("success", success != null);
         return "products";
     }
 
@@ -62,7 +69,15 @@ public class VendingMachineController {
 
     @PostMapping("/buy")
     public String buyProduct(@RequestParam int columnId) {
-        return "redirect:/products";
+        Product requestedProduct = productService.findByColumn(columnId);
+        if (requestedProduct == null) {
+            return "redirect:/products?iderror=true";
+        }
+        if (requestedProduct.getQuantity() <= 0) {
+            return "redirect:/products?stockerror=true";
+        }
+        requestedProduct.decrementQuantity(1);
+        return "redirect:/products?success=true";
     }
 
     @ExceptionHandler(Exception.class)
