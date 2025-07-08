@@ -65,7 +65,6 @@ public class VendingMachineController {
         return "redirect:/products";
     }
 
-
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {
         model.addAttribute("message", ex.getMessage());

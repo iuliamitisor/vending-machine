@@ -21,4 +21,13 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return products;
     }
+
+    public Product findByColumn(int columnId) {
+        for (Product p : products) {
+            if (p.getColumnId() == columnId) {
+                return p;
+            }
+        }
+        return null;
+    }
 }
