@@ -78,6 +78,18 @@ public class VendingMachineController {
         return "redirect:/payment";
     }
 
+    @PostMapping("/pay")
+    public String pay(@RequestParam String paymentMethod, Model model) {
+        if ("cash".equals(paymentMethod)) {
+            model.addAttribute("success", true);
+            return "redirect:/products?success=true";
+        } else if ("card".equals(paymentMethod)) {
+            model.addAttribute("success", true);
+            return "redirect:/products?success=true";
+        }
+        return "redirect:/payment";
+    }
+
 
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntimeException(RuntimeException ex, Model model) {
