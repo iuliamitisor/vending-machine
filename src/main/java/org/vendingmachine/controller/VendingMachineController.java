@@ -3,6 +3,7 @@ package org.vendingmachine.controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.vendingmachine.exception.PaymentValidationException;
 import org.vendingmachine.model.Product;
 import org.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Controller;
@@ -54,7 +55,11 @@ public class VendingMachineController {
     }
 
     @GetMapping("/payment")
-    public String payment() {
+    public String payment(@RequestParam(required = false) String error,
+                          @RequestParam int columnId,
+                          Model model) {
+        model.addAttribute("error", error != null);
+        model.addAttribute("columnId", columnId); // Add columnId to the model
         return "payment";
     }
 
@@ -75,19 +80,24 @@ public class VendingMachineController {
     @PostMapping("/buy")
     public String buyProduct(@RequestParam int columnId) {
         productService.buyProduct(columnId);
-        return "redirect:/payment";
+        return "redirect:/payment?columnId=" + columnId;
     }
 
     @PostMapping("/pay")
-    public String pay(@RequestParam String paymentMethod, Model model) {
+    public String pay(@RequestParam String paymentMethod,
+                      @RequestParam(required = false) Double cashAmount,
+                      @RequestParam int columnId,
+                      Model model) {
         if ("cash".equals(paymentMethod)) {
+            productService.validateCashPayment(productService.findByColumn(columnId), cashAmount, columnId);
+
             model.addAttribute("success", true);
             return "redirect:/products?success=true";
         } else if ("card".equals(paymentMethod)) {
             model.addAttribute("success", true);
             return "redirect:/products?success=true";
         }
-        return "redirect:/payment";
+        return "redirect:/payment?error=true";
     }
 
 
@@ -102,6 +112,12 @@ public class VendingMachineController {
         }
         return "error";
     }
+
+    @ExceptionHandler(PaymentValidationException.class)
+    public String handlePaymentValidationException(PaymentValidationException ex) {
+        return "redirect:/payment?error=true&columnId=" + ex.getColumnId();
+    }
+
 
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {

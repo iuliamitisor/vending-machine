@@ -3,9 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment</title>
+    <script>
+        function toggle() {
+            const cashInput = document.getElementById("cashAmount");
+            const cashLabel = document.getElementById("cashLabel");
+            const cashRadio = document.getElementById("cash");
+            if (cashRadio.checked) {
+                cashInput.style.display = "inline";
+                cashLabel.style.display = "inline";
+            } else {
+                cashInput.style.display = "none";
+                cashLabel.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
-<p>Pay.</p>
+<p>Select payment method:</p>
+<form th:action="@{/pay}" method="post">
+    <input type="hidden" name="columnId" th:value="${columnId}" />
+    <label>
+        <input type="radio" id="cash" name="paymentMethod" value="cash" onclick="toggle()" />
+        Cash
+    </label>
+    <label>
+        <input type="radio" id="card" name="paymentMethod" value="card" onclick="toggle()" />
+        Card
+    </label>
+    <br />
+    <label id="cashLabel" for="cashAmount" style="display: none;">Enter Amount:</label>
+    <input type="text" id="cashAmount" name="cashAmount" style="display: none;" />
+    <br />
+    <button type="submit">Submit</button>
+</form>
 
+<script th:if="${error}" th:inline="javascript">
+    alert("Payment error occurred.");
+</script>
 </body>
 </html>

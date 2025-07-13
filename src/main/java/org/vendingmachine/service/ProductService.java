@@ -2,6 +2,7 @@ package org.vendingmachine.service;
 
 import org.vendingmachine.model.Product;
 import org.springframework.stereotype.Service;
+import org.vendingmachine.exception.PaymentValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,4 +42,14 @@ public class ProductService {
         }
         requestedProduct.decrementQuantity(1);
     }
+
+    public void validateCashPayment(Product boughtProduct, double cashAmount, int columnId) {
+        if (cashAmount < 0) {
+            throw new PaymentValidationException("Invalid cash amount.", columnId);
+        }
+        if (cashAmount < boughtProduct.getPrice()) {
+            throw new PaymentValidationException("Insufficient cash amount.", columnId);
+        }
+    }
+
 }
