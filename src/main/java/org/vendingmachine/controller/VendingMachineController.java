@@ -53,6 +53,11 @@ public class VendingMachineController {
         return "products";
     }
 
+    @GetMapping("/payment")
+    public String payment() {
+        return "payment";
+    }
+
 
     @PostMapping("/admin")
     public String submitLogin(@RequestParam String password) {
@@ -70,8 +75,9 @@ public class VendingMachineController {
     @PostMapping("/buy")
     public String buyProduct(@RequestParam int columnId) {
         productService.buyProduct(columnId);
-        return "redirect:/products?success=true";
+        return "redirect:/payment";
     }
+
 
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntimeException(RuntimeException ex, Model model) {

@@ -37,9 +37,10 @@
         alert("Insufficient stock.");
     </script>
 
-    <script th:if="${success}" th:inline="javascript">
+<!--    <script th:if="${success}" th:inline="javascript">
         alert("Product dispensed for free haha");
     </script>
+-->
 
     <!--only shown to authenticated admin-->
     <p th:if="${adminflag}"><a href="/adminpanel">Back to admin panel</a></p>
