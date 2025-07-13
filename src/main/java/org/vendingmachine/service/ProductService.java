@@ -1,5 +1,8 @@
 package org.vendingmachine.service;
 
+import org.vendingmachine.exception.ColumnValidationException;
+import org.vendingmachine.exception.InsufficientStockException;
+import org.vendingmachine.exception.InvalidCashAmountException;
 import org.vendingmachine.model.Product;
 import org.springframework.stereotype.Service;
 import org.vendingmachine.exception.PaymentValidationException;
@@ -35,17 +38,17 @@ public class ProductService {
     public void buyProduct(int columnId) throws RuntimeException {
         Product requestedProduct = findByColumn(columnId);
         if (requestedProduct == null) {
-            throw new RuntimeException("Invalid column number.");
+            throw new ColumnValidationException("Invalid column number.");
         }
         if (requestedProduct.getQuantity() <= 0) {
-            throw new RuntimeException("Insufficient stock.");
+            throw new InsufficientStockException("Insufficient stock.");
         }
         requestedProduct.decrementQuantity(1);
     }
 
     public void validateCashPayment(Product boughtProduct, double cashAmount, int columnId) {
         if (cashAmount < 0) {
-            throw new PaymentValidationException("Invalid cash amount.", columnId);
+            throw new InvalidCashAmountException("Invalid cash amount.", columnId);
         }
         if (cashAmount < boughtProduct.getPrice()) {
             throw new PaymentValidationException("Insufficient cash amount.", columnId);

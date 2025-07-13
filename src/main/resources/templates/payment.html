@@ -38,7 +38,12 @@
 </form>
 
 <script th:if="${error}" th:inline="javascript">
-    alert("Payment error occurred.");
+    alert("Payment error occurred: insufficient amount inserted.");
 </script>
+
+<script th:if="${amounterror}" th:inline="javascript">
+    alert("Payment error occurred: invalid amount inserted.");
+</script>
+
 </body>
 </html>

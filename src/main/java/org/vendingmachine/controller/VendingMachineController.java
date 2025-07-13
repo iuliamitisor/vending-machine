@@ -3,8 +3,10 @@ package org.vendingmachine.controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.vendingmachine.exception.ColumnValidationException;
+import org.vendingmachine.exception.InsufficientStockException;
+import org.vendingmachine.exception.InvalidCashAmountException;
 import org.vendingmachine.exception.PaymentValidationException;
-import org.vendingmachine.model.Product;
 import org.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,10 +58,12 @@ public class VendingMachineController {
 
     @GetMapping("/payment")
     public String payment(@RequestParam(required = false) String error,
+                          @RequestParam(required = false) String amounterror,
                           @RequestParam int columnId,
                           Model model) {
         model.addAttribute("error", error != null);
-        model.addAttribute("columnId", columnId); // Add columnId to the model
+        model.addAttribute("amounterror", amounterror != null); // Fix this line
+        model.addAttribute("columnId", columnId);
         return "payment";
     }
 
@@ -90,7 +94,6 @@ public class VendingMachineController {
                       Model model) {
         if ("cash".equals(paymentMethod)) {
             productService.validateCashPayment(productService.findByColumn(columnId), cashAmount, columnId);
-
             model.addAttribute("success", true);
             return "redirect:/products?success=true";
         } else if ("card".equals(paymentMethod)) {
@@ -101,23 +104,25 @@ public class VendingMachineController {
     }
 
 
-    @ExceptionHandler(RuntimeException.class)
-    public String handleRuntimeException(RuntimeException ex, Model model) {
-        if (ex.getMessage().equals("Invalid column number.")) {
-            model.addAttribute("iderror", true);
-            return "redirect:/products?iderror=true";
-        } else if (ex.getMessage().equals("Insufficient stock.")) {
-            model.addAttribute("stockerror", true);
-            return "redirect:/products?stockerror=true";
-        }
-        return "error";
+    @ExceptionHandler(ColumnValidationException.class)
+    public String handleProductNotFound(ColumnValidationException ex) {
+        return "redirect:/products?iderror=true";
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public String handleOutOfStock(InsufficientStockException ex) {
+        return "redirect:/products?stockerror=true";
+    }
+
+    @ExceptionHandler(InvalidCashAmountException.class)
+    public String handleInvalidCashAmountException(InvalidCashAmountException ex) {
+        return "redirect:/payment?amounterror=true&columnId=" + ex.getColumnId();
     }
 
     @ExceptionHandler(PaymentValidationException.class)
     public String handlePaymentValidationException(PaymentValidationException ex) {
         return "redirect:/payment?error=true&columnId=" + ex.getColumnId();
     }
-
 
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {
