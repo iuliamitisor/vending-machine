@@ -38,11 +38,19 @@
 </form>
 
 <script th:if="${error}" th:inline="javascript">
-    alert("Payment error occurred: insufficient amount inserted.");
+    alert("Payment error occurred: insufficient amount inserted. Canceling transaction.");
+    window.location.href = "/products";
 </script>
 
 <script th:if="${amounterror}" th:inline="javascript">
-    alert("Payment error occurred: invalid amount inserted.");
+    alert("Payment error occurred: invalid amount inserted. Canceling transaction.");
+    window.location.href = "/products";
+</script>
+
+<script th:if="${givechange}" th:inline="javascript">
+    alert("Excess cash inserted. Please collect your change. Change amount: " + [[${change}]]);
+    alert("Product dispensed!");
+    window.location.href = "/products";
 </script>
 
 </body>

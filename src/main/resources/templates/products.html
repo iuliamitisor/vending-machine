@@ -31,6 +31,7 @@
 
     <script th:if="${iderror}" th:inline="javascript">
         alert("Invalid column number.");
+        window.location.href = "/products";
     </script>
 
     <script th:if="${stockerror}" th:inline="javascript">

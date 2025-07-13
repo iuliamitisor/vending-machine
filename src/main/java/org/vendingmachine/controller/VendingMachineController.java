@@ -3,10 +3,7 @@ package org.vendingmachine.controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.vendingmachine.exception.ColumnValidationException;
-import org.vendingmachine.exception.InsufficientStockException;
-import org.vendingmachine.exception.InvalidCashAmountException;
-import org.vendingmachine.exception.PaymentValidationException;
+import org.vendingmachine.exception.*;
 import org.vendingmachine.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,10 +56,14 @@ public class VendingMachineController {
     @GetMapping("/payment")
     public String payment(@RequestParam(required = false) String error,
                           @RequestParam(required = false) String amounterror,
+                          @RequestParam(required = false) String givechange,
+                          @RequestParam(required = false) String change,
                           @RequestParam int columnId,
                           Model model) {
         model.addAttribute("error", error != null);
-        model.addAttribute("amounterror", amounterror != null); // Fix this line
+        model.addAttribute("amounterror", amounterror != null);
+        model.addAttribute("givechange", givechange != null);
+        model.addAttribute("change", change);
         model.addAttribute("columnId", columnId);
         return "payment";
     }
@@ -89,7 +90,7 @@ public class VendingMachineController {
 
     @PostMapping("/pay")
     public String pay(@RequestParam String paymentMethod,
-                      @RequestParam(required = false) Double cashAmount,
+                      @RequestParam(required = false) Float cashAmount,
                       @RequestParam int columnId,
                       Model model) {
         if ("cash".equals(paymentMethod)) {
@@ -97,6 +98,7 @@ public class VendingMachineController {
             model.addAttribute("success", true);
             return "redirect:/products?success=true";
         } else if ("card".equals(paymentMethod)) {
+            productService.validateCardPayment(productService.findByColumn(columnId));
             model.addAttribute("success", true);
             return "redirect:/products?success=true";
         }
@@ -122,6 +124,11 @@ public class VendingMachineController {
     @ExceptionHandler(PaymentValidationException.class)
     public String handlePaymentValidationException(PaymentValidationException ex) {
         return "redirect:/payment?error=true&columnId=" + ex.getColumnId();
+    }
+
+    @ExceptionHandler(ExcessCashException.class)
+    public String handleExcessCashException(ExcessCashException ex) {
+        return "redirect:/payment?givechange=true&columnId=" + ex.getColumnId() + "&change=" + ex.getChangeAmount();
     }
 
     @ExceptionHandler(Exception.class)
