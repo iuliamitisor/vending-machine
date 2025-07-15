@@ -41,6 +41,7 @@ public class ProductService {
         float requiredAmount = boughtProduct.getPrice();
         if (cashAmount >= requiredAmount) {
             boughtProduct.decrementQuantity(1);
+            productRepository.save(boughtProduct);
         }
 
         if (cashAmount < requiredAmount) {
@@ -54,6 +55,6 @@ public class ProductService {
     public void validateCardPayment(Product boughtProduct) {
         // Assume card payment always successful
         boughtProduct.decrementQuantity(1);
-        // TODO update the row in the database
+        productRepository.save(boughtProduct);
     }
 }
