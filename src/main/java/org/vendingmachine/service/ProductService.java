@@ -3,33 +3,25 @@ package org.vendingmachine.service;
 import org.vendingmachine.exception.*;
 import org.vendingmachine.model.Product;
 import org.springframework.stereotype.Service;
+import org.vendingmachine.repository.ProductRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProductService {
 
-    // Used a list to store products for now
-    private final List<Product> products = new ArrayList<>();
+    private final ProductRepository productRepository;
 
-    public ProductService() {
-        products.add(new Product(1, "Eugenia", 3.2f, 10));
-        products.add(new Product(2, "Pepsi", 7.5f, 8));
-        products.add(new Product(3, "Chio Chips", 12.0f, 5));
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     public List<Product> getAllProducts() {
-        return products;
+        return productRepository.findAll();
     }
 
     public Product findByColumn(int columnId) {
-        for (Product p : products) {
-            if (p.getColumnId() == columnId) {
-                return p;
-            }
-        }
-        return null;
+        return productRepository.findByColumnId(columnId);
     }
 
     public void buyProduct(int columnId) throws RuntimeException {
@@ -62,5 +54,6 @@ public class ProductService {
     public void validateCardPayment(Product boughtProduct) {
         // Assume card payment always successful
         boughtProduct.decrementQuantity(1);
+        // TODO update the row in the database
     }
 }

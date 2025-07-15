@@ -1,10 +1,23 @@
 package org.vendingmachine.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private int columnId;
     private String name;
     private float price;
     private int quantity;
+
+    protected Product() {}
 
     public Product(int columnId, String name, float price, int quantity) {
         this.columnId = columnId;
@@ -12,6 +25,8 @@ public class Product {
         this.price = price;
         this.quantity = quantity;
     }
+
+    public Long getId() { return id; }
 
     public int getColumnId() { return columnId; }
     public void setColumnId(int columnId) { this.columnId = columnId; }
