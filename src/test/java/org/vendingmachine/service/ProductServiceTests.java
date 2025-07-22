@@ -58,4 +58,62 @@ class ProductServiceTests {
         verify(productRepository, never()).save(any());
     }
 
+    @Test
+    void validateCashPayment_neededAmount_decrementsStock_andSaves() {
+        // Arrange
+        Product product = new Product(1, "Biscuitei", 6.9f, 3);
+
+        // Act
+        productService.validateCashPayment(product, 6.9f, 1);
+
+        // Assert
+        assertEquals(2, product.getQuantity());
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void validateCashPayment_insufficientAmount_throwsPaymentValidation() {
+        // Arrange
+        Product product = new Product(1, "Biscuitei", 6.9f, 3);
+
+        // Act & Assert
+        assertThrows(PaymentValidationException.class, () -> productService.validateCashPayment(product, 1.0f, 1));
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void validateCashPayment_negativeAmount_throwsInvalidCashAmount() {
+        // Arrange
+        Product product = new Product(1, "Biscuitei", 6.9f, 3);
+
+        // Act & Assert
+        assertThrows(InvalidCashAmountException.class, () -> productService.validateCashPayment(product, -1.0f, 1));
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void validateCashPayment_excessAmount_throwsExcessCashException() {
+        // Arrange
+        Product product = new Product(1, "Biscuitei", 6.9f, 3);
+
+        // Act & Assert
+        ExcessCashException ex = assertThrows(ExcessCashException.class, () -> productService.validateCashPayment(product, 7.0f, 1));
+        assertEquals(0.1f, ex.getChangeAmount(), 0.0001f);
+        assertEquals(1, ex.getColumnId());
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void validateCardPayment_validPayment_decrementsStock_andSaves() {
+        // Arrange
+        Product product = new Product(1, "Biscuitei", 6.9f, 3);
+
+        // Act
+        productService.validateCardPayment(product);
+
+        // Assert
+        assertEquals(2, product.getQuantity());
+        verify(productRepository).save(product);
+    }
+
 }
