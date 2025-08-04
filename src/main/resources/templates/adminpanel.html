@@ -9,6 +9,37 @@
     <h2>Logged in as admin.</h2>
     <p><a href="/adminpanel/products">Show shelves</a></p>
 
+    <h2>Download Reports</h2>
+    <form action="/adminpanel/stockreport" method="get">
+        <button type="submit">Download Stock Report</button>
+    </form>
+
+    <form action="/adminpanel/salesreport" method="get">
+        <label>Start Date:</label>
+        <label>
+            <input type="date" name="start" required>
+        </label>
+        <label>End Date:</label>
+        <label>
+            <input type="date" name="end" required>
+        </label>
+        <button type="submit">Download Sales Report</button>
+    </form>
+
+    <form action="/adminpanel/volumereport" method="get">
+        <label>Start Date:</label>
+        <label>
+            <input type="date" name="start" required>
+        </label>
+        <label>End Date:</label>
+        <label>
+            <input type="date" name="end" required>
+        </label>
+        <button type="submit">Download Volume Report</button>
+    </form>
+
+    <h2></h2>
+
     <form th:action="@{/logout}" method="post">
         <button type="submit">Log out</button>
     </form>

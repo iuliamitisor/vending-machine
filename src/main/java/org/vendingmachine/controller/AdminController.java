@@ -1,21 +1,29 @@
 package org.vendingmachine.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import org.vendingmachine.repository.ProductRepository;
+import org.vendingmachine.model.Sale;
 import org.vendingmachine.service.ProductService;
+import org.vendingmachine.service.SaleReportsService;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class AdminController {
 
     private final ProductService productService;
-    private final ProductRepository productRepository;
+    private final SaleReportsService saleReportsService;
 
-    public AdminController(ProductService productService, ProductRepository productRepository) {
+    public AdminController(ProductService productService, SaleReportsService saleReportsService) {
         this.productService = productService;
-        this.productRepository = productRepository;
+        this.saleReportsService = saleReportsService;
     }
 
 
@@ -35,6 +43,45 @@ public class AdminController {
         model.addAttribute("products", productService.getAllProducts());
         model.addAttribute("adminflag", true);
         return "products";
+    }
+
+    @GetMapping("/adminpanel/stockreport")
+    public ResponseEntity<Object> getStockReport() {
+        var stock = saleReportsService.createStockReport();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stockreport.json\"")
+                .body(stock);
+    }
+
+    @GetMapping("/adminpanel/salesreport")
+    public ResponseEntity<List<Sale>> getSalesReport(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+
+        LocalDateTime startDateTime = start.atStartOfDay();
+        LocalDateTime endDateTime = end.atTime(23, 59, 59);
+
+        List<Sale> sales = saleReportsService.createSalesReport(startDateTime, endDateTime);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"salesreport.json\"")
+                .body(sales);
+    }
+
+    @GetMapping("/adminpanel/volumereport")
+    public ResponseEntity<Object> getVolumeReport(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+
+        LocalDateTime startDateTime = start.atStartOfDay();
+        LocalDateTime endDateTime = end.atTime(23, 59, 59);
+
+        var volume = saleReportsService.createVolumeReport(startDateTime, endDateTime);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"volumereport.json\"")
+                .body(volume);
     }
 
 
