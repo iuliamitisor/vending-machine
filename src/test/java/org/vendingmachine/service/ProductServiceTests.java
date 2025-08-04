@@ -6,6 +6,7 @@ import org.mockito.*;
 import org.vendingmachine.exception.*;
 import org.vendingmachine.model.Product;
 import org.vendingmachine.repository.ProductRepository;
+import org.vendingmachine.repository.SaleRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -14,6 +15,9 @@ class ProductServiceTests {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private SaleRepository saleRepository;
 
     @InjectMocks
     private ProductService productService;
