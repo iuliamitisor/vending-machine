@@ -47,41 +47,48 @@ public class AdminController {
 
     @GetMapping("/adminpanel/stockreport")
     public ResponseEntity<Object> getStockReport() {
-        var stock = saleReportsService.createStockReport();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stockreport.json\"")
-                .body(stock);
+        try {
+            var stock = saleReportsService.createStockReport();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stockreport.json\"")
+                    .body(stock);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while generating the stock report: " + e.getMessage());
+        }
     }
 
     @GetMapping("/adminpanel/salesreport")
-    public ResponseEntity<List<Sale>> getSalesReport(
+    public ResponseEntity<Object> getSalesReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        try {
+            LocalDateTime startDateTime = start.atStartOfDay();
+            LocalDateTime endDateTime = end.atTime(23, 59, 59);
 
-        LocalDateTime startDateTime = start.atStartOfDay();
-        LocalDateTime endDateTime = end.atTime(23, 59, 59);
-
-        List<Sale> sales = saleReportsService.createSalesReport(startDateTime, endDateTime);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"salesreport.json\"")
-                .body(sales);
+            List<Sale> sales = saleReportsService.createSalesReport(startDateTime, endDateTime);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"salesreport.json\"")
+                    .body(sales);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while generating the sales report: " + e.getMessage());
+        }
     }
 
     @GetMapping("/adminpanel/volumereport")
     public ResponseEntity<Object> getVolumeReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        try {
+            LocalDateTime startDateTime = start.atStartOfDay();
+            LocalDateTime endDateTime = end.atTime(23, 59, 59);
 
-        LocalDateTime startDateTime = start.atStartOfDay();
-        LocalDateTime endDateTime = end.atTime(23, 59, 59);
-
-        var volume = saleReportsService.createVolumeReport(startDateTime, endDateTime);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"volumereport.json\"")
-                .body(volume);
+            var volume = saleReportsService.createVolumeReport(startDateTime, endDateTime);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"volumereport.json\"")
+                    .body(volume);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while generating the volume report: " + e.getMessage());
+        }
     }
 
 
