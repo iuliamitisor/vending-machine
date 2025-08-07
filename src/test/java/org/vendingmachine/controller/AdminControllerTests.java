@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.vendingmachine.SecurityConfig;
 import org.vendingmachine.model.Sale;
 import org.vendingmachine.service.ProductService;
 import org.vendingmachine.service.SaleReportsService;
@@ -16,10 +19,10 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AdminController.class)
+@Import(SecurityConfig.class)
 class AdminControllerTests {
 
     @Autowired
@@ -32,6 +35,7 @@ class AdminControllerTests {
     private SaleReportsService saleReportsService;
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void adminPanel_returnsAdminPanel() throws Exception {
         mockMvc.perform(get("/adminpanel"))
                 .andExpect(status().isOk())
@@ -39,20 +43,7 @@ class AdminControllerTests {
     }
 
     @Test
-    void submitLogin_correctPassword_redirectsToAdminPanel() throws Exception {
-        mockMvc.perform(post("/admin").param("password", "passadmin"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/adminpanel"));
-    }
-
-    @Test
-    void submitLogin_wrongPassword_redirectsToLoginError() throws Exception {
-        mockMvc.perform(post("/admin").param("password", "balarii"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login?error=true"));
-    }
-
-    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void adminProducts_displaysProducts() throws Exception {
         when(productService.getAllProducts()).thenReturn(List.of());
         mockMvc.perform(get("/adminpanel/products"))
@@ -63,13 +54,7 @@ class AdminControllerTests {
     }
 
     @Test
-    void submitLogout_redirectsToHomePage() throws Exception {
-        mockMvc.perform(post("/logout"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
-    }
-
-    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getStockReport_returnsJsonSuccessfully() throws Exception {
         when(saleReportsService.createStockReport())
                 .thenReturn(Map.of("Eugenia", 10));
@@ -81,6 +66,7 @@ class AdminControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getStockReport_handlesException() throws Exception {
         when(saleReportsService.createStockReport())
                 .thenThrow(new RuntimeException("ERROR"));
@@ -91,6 +77,7 @@ class AdminControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getSalesReport_returnsSalesSuccessfully() throws Exception {
         Sale newSale = new Sale(1, 2.5f, "cash", 1, LocalDateTime.now());
         when(saleReportsService.createSalesReport(any(), any()))
@@ -107,6 +94,7 @@ class AdminControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getSalesReport_handlesException() throws Exception {
         when(saleReportsService.createSalesReport(any(), any()))
                 .thenThrow(new RuntimeException("ERROR"));
@@ -119,6 +107,7 @@ class AdminControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getVolumeReport_returnsVolumeSuccessfully() throws Exception {
         when(saleReportsService.createVolumeReport(any(), any()))
                 .thenReturn(Map.of("Eugenia", 7L));
@@ -132,6 +121,7 @@ class AdminControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getVolumeReport_handlesException() throws Exception {
         when(saleReportsService.createVolumeReport(any(), any()))
                 .thenThrow(new RuntimeException("ERROR"));

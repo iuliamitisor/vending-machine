@@ -90,19 +90,4 @@ public class AdminController {
             return ResponseEntity.status(500).body("An error occurred while generating the volume report: " + e.getMessage());
         }
     }
-
-
-    @PostMapping("/admin")
-    public String submitLogin(@RequestParam String password) {
-        if ("passadmin".equals(password)) {
-            return "redirect:/adminpanel";
-        }
-        return "redirect:/login?error=true";
-    }
-
-    @PostMapping("/logout")
-    public String submitLogout() {
-        return "redirect:/";
-    }
-
 }
