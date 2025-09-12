@@ -5,7 +5,7 @@ A **Spring Boot application** designed to simulate and manage a vending machine.
 ## Features  
 - **Customer-facing module**:  
   - Browse available products.  
-  - SImulate item purchase using cash or card.  
+  - Simulate item purchase using cash or card, with the option of returning change amount in case of cash payment.  
   - Automatic stock validation and **error handling** (e.g., insufficient stock, invalid payment).  
 
 - **Admin panel** (secured with **Spring Security**):  
@@ -26,7 +26,7 @@ A **Spring Boot application** designed to simulate and manage a vending machine.
   - Tracked progress using **GitHub Issues** and a **Kanban board**.
 
 ## Tech Stack  
-- **Backend**: Java, Spring Boot, Spring MVC, Spring Security  
+- **Backend**: Java, Spring Boot, Spring Security  
 - **Database**: MySQL (Spring Data JPA)  
 - **Testing**: JUnit 5, Mockito, MockMvc  
 - **Project management**: GitHub Issues, Kanban board, sprints  
